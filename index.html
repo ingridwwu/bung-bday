@@ -1,0 +1,508 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>happy birthday ♡</title>
+<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;700&family=Dancing+Script:wght@400;700&family=Fraunces:opsz,wght@9..144,300;9..144,500&display=swap" rel="stylesheet">
+<style>
+:root{--cream:#f6f1e7;--ink:#2d2a26;--muted:#8a8278;--pink:#f4a7c3}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{background:var(--cream);color:var(--ink);font-family:"Fraunces",Georgia,serif;font-weight:300;overflow:hidden;-webkit-tap-highlight-color:transparent}
+button{font:inherit;color:inherit;cursor:pointer}
+.scene{position:fixed;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;padding:24px;transition:opacity 1s ease}
+.hidden{opacity:0;pointer-events:none}
+.eyebrow{letter-spacing:.28em;text-transform:uppercase;font-size:12px;color:var(--muted)}
+.hand{font-family:"Caveat",cursive;font-weight:700}
+.pill{border:1px solid var(--ink);background:transparent;border-radius:999px;padding:10px 26px;font-size:15px;transition:.2s}
+.pill:hover{background:var(--ink);color:var(--cream)}
+.link{background:none;border:none;color:var(--muted);font-size:13px;text-decoration:underline;text-underline-offset:3px}
+#start h1{font-size:clamp(44px,11vw,72px)}
+h2{font-weight:300;font-size:clamp(26px,6vw,40px);text-align:center}
+#cake{width:min(84vw,380px);height:auto;overflow:visible}
+#hint{font-size:15px;color:var(--muted);text-align:center;min-height:1.4em}
+.candle{cursor:pointer}
+.flame{transform-box:fill-box;transform-origin:50% 100%;animation:flick .18s ease-in-out infinite alternate;transition:opacity .25s}
+.glow{animation:glow 1.4s ease-in-out infinite alternate;transition:opacity .25s}
+.out .flame,.out .glow{opacity:0;animation:none}
+@keyframes flick{from{transform:scale(1,1) skewX(-2deg)}to{transform:scale(.92,1.08) skewX(3deg)}}
+@keyframes glow{from{opacity:.25}to{opacity:.45}}
+.smoke{fill:#b9b2a8;transform-box:fill-box;transform-origin:center;animation:smoke 1.6s ease-out forwards}
+@keyframes smoke{from{opacity:.7;transform:translateY(0) scale(.6)}to{opacity:0;transform:translateY(-46px) scale(1.8)}}
+
+/* drive scene */
+#driveScene{padding:0;justify-content:flex-start}
+#world{position:absolute;inset:0;width:100%;height:100%}
+#skyNight,#stars,#tint,#moon{transition:opacity 7s ease;opacity:0}
+.night #skyNight,.night #stars,.night #moon{opacity:1}
+.night #tint{opacity:.45}
+.dance{transform-box:fill-box;transform-origin:50% 100%;animation:dance .5s ease-in-out infinite alternate}
+.dance.d2{animation-delay:-.25s}
+@keyframes dance{from{transform:translateY(0) rotate(-12deg)}to{transform:translateY(-16px) rotate(12deg)}}
+.sun{transition:opacity 7s ease}
+.night .sun{opacity:0}
+#tint{transition:opacity 7s ease}
+.star{animation:tw 3s ease-in-out infinite alternate}
+@keyframes tw{from{opacity:.25}to{opacity:1}}
+#note{max-height:82vh;overflow-y:auto;position:relative;z-index:2;margin-top:max(6vh,24px);width:min(520px,88vw);text-align:center;background:rgba(251,248,242,.72);border-radius:18px;padding:24px 26px 18px;box-shadow:0 20px 60px rgba(0,0,0,.25);opacity:0;transform:translateY(12px);transition:opacity 1.2s ease,transform 1.2s ease;pointer-events:none}
+#note.show{opacity:1;transform:none;pointer-events:auto}
+#note p{white-space:pre-line;font-family:"Dancing Script",cursive;font-size:clamp(15px,3.2vw,18px);line-height:1.35;text-align:left}
+
+#musicBtn{position:fixed;right:16px;bottom:16px;z-index:20;width:44px;height:44px;border-radius:50%;border:1px solid rgba(45,42,38,.25);background:rgba(251,248,242,.85);font-size:18px}
+#musicBtn.on{animation:pulse 2s ease-in-out infinite}
+@keyframes pulse{50%{box-shadow:0 0 0 6px rgba(244,167,195,.35)}}
+#yt{position:fixed;left:0;bottom:0;width:200px;height:200px;opacity:.01;pointer-events:none;overflow:hidden;transform:translate(-190px,190px)}
+#confetti{position:fixed;inset:0;pointer-events:none;z-index:15}
+#prank{position:fixed;top:9vh;left:50%;transform:translate(-50%,-10px);z-index:25;font-size:15px;color:var(--muted);text-align:center;white-space:nowrap;opacity:0;transition:opacity .4s ease,transform .4s ease;pointer-events:none}
+#prank.show{opacity:1;transform:translate(-50%,0)}
+</style>
+</head>
+<body>
+
+<section id="start" class="scene">
+  <div class="eyebrow">a little something...</div>
+  <h1 class="hand">for Bung</h1>
+  <button class="pill" id="openBtn">open</button>
+</section>
+
+<section id="wishScene" class="scene hidden">
+  <div class="eyebrow">before the candles...</div>
+  <h1 class="hand">make a wish Bung!</h1>
+  <button class="pill" id="wishBtn">ok</button>
+</section>
+
+<section id="cakeScene" class="scene hidden">
+  <div class="eyebrow">tap each candle</div>
+  <h2>Happy birthday Bung!</h2>
+  <svg id="cake" viewBox="0 0 400 380" aria-label="birthday cake">
+    <defs>
+      <radialGradient id="flameG" cx="50%" cy="75%" r="70%">
+        <stop offset="0" stop-color="#fffbe0"/><stop offset=".45" stop-color="#ffd46b"/><stop offset="1" stop-color="#ff8a3d"/>
+      </radialGradient>
+      <radialGradient id="glowG"><stop offset="0" stop-color="#ffd27a"/><stop offset="1" stop-color="#ffd27a" stop-opacity="0"/></radialGradient>
+    </defs>
+    <ellipse cx="200" cy="340" rx="178" ry="20" fill="#e3d8c5"/>
+    <ellipse cx="200" cy="334" rx="162" ry="14" fill="#efe7d8"/>
+    <path d="M62 222 V312 Q62 332 200 332 Q338 332 338 312 V222 Z" fill="#7fb3d5"/>
+    <path d="M62 300 Q62 320 200 320 Q338 320 338 300 V312 Q338 332 200 332 Q62 332 62 312Z" fill="#5f9cc9"/>
+    <g id="sprinkles1"></g>
+    <g id="drips1" stroke="#fbf6ec" stroke-linecap="round" stroke-width="12" fill="none"></g>
+    <ellipse cx="200" cy="222" rx="138" ry="22" fill="#fbf6ec"/>
+    <path d="M122 150 V205 Q122 220 200 220 Q278 220 278 205 V150 Z" fill="#a9cfe8"/>
+    <g id="sprinkles2"></g>
+    <g id="drips2" stroke="#7fb3d5" stroke-linecap="round" stroke-width="10" fill="none"></g>
+    <ellipse cx="200" cy="150" rx="78" ry="14" fill="#7fb3d5"/>
+    <g id="candles"></g>
+  </svg>
+  <div id="hint">blow into your mic to blow out the candles</div>
+</section>
+
+<section id="driveScene" class="scene hidden">
+  <svg id="world" viewBox="0 0 1200 700" preserveAspectRatio="xMidYMax slice">
+    <defs>
+      <linearGradient id="skyG" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="0" y2="410"><stop offset="0" stop-color="#a7dadf"/><stop offset=".4" stop-color="#e9efcf"/><stop offset=".7" stop-color="#fbe2a2"/><stop offset="1" stop-color="#ffcf85"/></linearGradient>
+      <linearGradient id="seaG" gradientUnits="userSpaceOnUse" x1="0" y1="400" x2="0" y2="530"><stop offset="0" stop-color="#7fb0bd"/><stop offset=".6" stop-color="#a9c7c0"/><stop offset="1" stop-color="#e8cf9b"/></linearGradient>
+      <linearGradient id="sandG" gradientUnits="userSpaceOnUse" x1="0" y1="520" x2="0" y2="700"><stop offset="0" stop-color="#f0c07e"/><stop offset=".5" stop-color="#e3964f"/><stop offset="1" stop-color="#c77a45"/></linearGradient>
+      <radialGradient id="sunGlow"><stop offset="0" stop-color="#fff6d0" stop-opacity=".9"/><stop offset="1" stop-color="#fff6d0" stop-opacity="0"/></radialGradient>
+      <!-- Kirby hat (origin = head center) -->
+      <g id="kirbyHat">
+        <circle cx="-19" cy="-5" r="4.5" fill="#f7a1c4"/><circle cx="19" cy="-5" r="4.5" fill="#f7a1c4"/>
+        <path d="M-19.5 -2 C-19.5 -29 19.5 -29 19.5 -2 Z" fill="#f7a1c4"/>
+        <ellipse cx="-4.5" cy="-13" rx="2.2" ry="4.4" fill="#1c1a3a"/><ellipse cx="4.5" cy="-13" rx="2.2" ry="4.4" fill="#1c1a3a"/>
+        <circle cx="-4.5" cy="-15" r="1" fill="#fff"/><circle cx="4.5" cy="-15" r="1" fill="#fff"/>
+        <ellipse cx="-11" cy="-7" rx="3.4" ry="1.7" fill="#ee5f90"/><ellipse cx="11" cy="-7" rx="3.4" ry="1.7" fill="#ee5f90"/>
+        <path d="M-2 -7 Q0 -5 2 -7" stroke="#1c1a3a" stroke-width="1.2" fill="none" stroke-linecap="round"/>
+      </g>
+      <g id="kirbyHatBlue">
+        <circle cx="-19" cy="-5" r="4.5" fill="#7fb8ec"/><circle cx="19" cy="-5" r="4.5" fill="#7fb8ec"/>
+        <path d="M-19.5 -2 C-19.5 -29 19.5 -29 19.5 -2 Z" fill="#7fb8ec"/>
+        <ellipse cx="-4.5" cy="-13" rx="2.2" ry="4.4" fill="#1c1a3a"/><ellipse cx="4.5" cy="-13" rx="2.2" ry="4.4" fill="#1c1a3a"/>
+        <circle cx="-4.5" cy="-15" r="1" fill="#fff"/><circle cx="4.5" cy="-15" r="1" fill="#fff"/>
+        <ellipse cx="-11" cy="-7" rx="3.4" ry="1.7" fill="#2f6fb0"/><ellipse cx="11" cy="-7" rx="3.4" ry="1.7" fill="#2f6fb0"/>
+        <path d="M-2 -7 Q0 -5 2 -7" stroke="#1c1a3a" stroke-width="1.2" fill="none" stroke-linecap="round"/>
+      </g>
+      <!-- minion with Kirby hat (origin = body center) -->
+      <g id="minion">
+        <rect x="-23" y="-3" width="8" height="17" rx="4" fill="#fdc10d" stroke="#000" stroke-width="3"/>
+        <rect x="15" y="-3" width="8" height="17" rx="4" fill="#fdc10d" stroke="#000" stroke-width="3"/>
+        <rect x="-17" y="-23" width="34" height="48" rx="17" fill="#fdc10d" stroke="#000" stroke-width="3"/>
+        <rect x="-17" y="-10" width="34" height="4" fill="#111"/>
+        <circle cx="0" cy="-8" r="10" fill="#eef1f4" stroke="#000" stroke-width="3"/>
+        <circle cx="1.5" cy="-8" r="4" fill="#000"/>
+        <path d="M-7 9 Q0 14 7 9" stroke="#000" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+        <path d="M-16 8 Q0 13 16 8 L17 22 Q10 26 0 26 Q-10 26 -17 22Z" fill="#2196f3" stroke="#000" stroke-width="3"/>
+        <use href="#kirbyHat" transform="translate(0,-20)"/>
+      </g>
+      <g id="minionBlue">
+        <rect x="-23" y="-3" width="8" height="17" rx="4" fill="#fdc10d" stroke="#000" stroke-width="3"/>
+        <rect x="15" y="-3" width="8" height="17" rx="4" fill="#fdc10d" stroke="#000" stroke-width="3"/>
+        <rect x="-17" y="-23" width="34" height="48" rx="17" fill="#fdc10d" stroke="#000" stroke-width="3"/>
+        <rect x="-17" y="-10" width="34" height="4" fill="#111"/>
+        <circle cx="0" cy="-8" r="10" fill="#eef1f4" stroke="#000" stroke-width="3"/>
+        <circle cx="1.5" cy="-8" r="4" fill="#000"/>
+        <path d="M-7 9 Q0 14 7 9" stroke="#000" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+        <path d="M-16 8 Q0 13 16 8 L17 22 Q10 26 0 26 Q-10 26 -17 22Z" fill="#2196f3" stroke="#000" stroke-width="3"/>
+        <use href="#kirbyHatBlue" transform="translate(0,-20)"/>
+      </g>
+      <g id="wheelDef">
+        <circle r="30" fill="#1d1d1d"/>
+        <circle r="27" fill="none" stroke="#333" stroke-width="5" stroke-dasharray="6 5"/>
+        <circle r="15" fill="#9aa0a6"/>
+        <circle cx="9" r="2.6" fill="#6b7075"/><circle cx="-9" r="2.6" fill="#6b7075"/><circle cy="9" r="2.6" fill="#6b7075"/><circle cy="-9" r="2.6" fill="#6b7075"/>
+        <circle r="4.5" fill="#555"/>
+      </g>
+    </defs>
+    <rect width="1200" height="420" fill="url(#skyG)"/>
+    <g fill="#fff3d6" opacity=".8">
+      <ellipse cx="150" cy="60" rx="170" ry="20"/><ellipse cx="560" cy="40" rx="230" ry="26"/><ellipse cx="980" cy="90" rx="210" ry="18"/>
+    </g>
+    <g fill="#ffc27a" opacity=".55">
+      <ellipse cx="1100" cy="220" rx="150" ry="26"/><ellipse cx="260" cy="180" rx="190" ry="14"/><ellipse cx="620" cy="250" rx="120" ry="12"/>
+    </g>
+    <circle cx="900" cy="340" r="120" fill="url(#sunGlow)"/>
+    <circle cx="900" cy="340" r="62" fill="#fffdf6"/>
+    <path d="M0 410 L0 215 L110 255 L230 330 L330 372 L430 345 L560 384 L700 332 L820 368 L960 352 L1100 386 L1200 372 L1200 410Z" fill="#d8593f"/>
+    <path d="M0 410 L150 360 L300 392 L460 370 L620 400 L800 378 L1000 398 L1200 384 L1200 410Z" fill="#e5744c" opacity=".9"/>
+    <rect y="405" width="1200" height="120" fill="url(#seaG)"/>
+    <path d="M870 412 L930 412 L950 470 L880 470Z" fill="#fffbe8" opacity=".75"/>
+    <g stroke="#fff" stroke-width="2" opacity=".5" fill="none">
+      <path d="M380 430 Q420 425 460 432"/><path d="M640 448 Q700 442 760 450"/><path d="M1000 440 Q1060 434 1120 442"/><path d="M700 470 Q760 465 820 472"/>
+    </g>
+    <path d="M0 505 Q300 480 620 508 T1200 500 L1200 522 Q900 537 620 526 T0 532Z" fill="#f6f0e0" opacity=".9"/>
+    <path d="M0 530 Q600 512 1200 528 L1200 700 L0 700Z" fill="url(#sandG)"/>
+    <path d="M0 538 Q600 526 1200 540 L1200 548 Q600 538 0 548Z" fill="#c9a77a" opacity=".5"/>
+    <path d="M40 720 C90 520 150 380 215 255" stroke="#6b4a2f" stroke-width="26" fill="none" stroke-linecap="round"/>
+    <path d="M40 720 C90 520 150 380 215 255" stroke="#8a6444" stroke-width="6" fill="none" stroke-linecap="round" opacity=".5"/>
+    <g fill="#22303a"><path d="M215 255 Q124 224 18 280 Q112 294 215 255Z"/><path d="M215 255 Q161 195 59 203 Q123 250 215 255Z"/><path d="M215 255 Q205 188 130 159 Q153 218 215 255Z"/><path d="M215 255 Q241 200 202 151 Q189 205 215 255Z"/><path d="M215 255 Q268 221 263 165 Q222 204 215 255Z"/><path d="M215 255 Q302 247 335 186 Q259 205 215 255Z"/><path d="M215 255 Q319 290 394 247 Q296 227 215 255Z"/><path d="M215 255 Q292 332 382 336 Q303 273 215 255Z"/><path d="M215 255 Q263 344 345 375 Q290 298 215 255Z"/></g>
+    <g fill="#26343c"><path d="M30 650 Q-84 594 -216 637 Q-98 673 30 650Z"/><path d="M30 650 Q-47 566 -169 563 Q-83 630 30 650Z"/><path d="M30 650 Q7 562 -79 517 Q-43 597 30 650Z"/><path d="M30 650 Q49 571 0 503 Q-5 580 30 650Z"/><path d="M30 650 Q102 582 98 486 Q42 560 30 650Z"/><path d="M30 650 Q148 625 206 530 Q100 569 30 650Z"/><path d="M30 650 Q148 677 243 619 Q129 609 30 650Z"/><path d="M30 650 Q112 701 199 685 Q116 647 30 650Z"/></g>
+        <g id="jeep" transform="translate(-420,470)">
+      <ellipse cx="140" cy="172" rx="125" ry="8" fill="#000" opacity=".25"/>
+      <use href="#minion" transform="translate(100,46)"/>
+      <use href="#minionBlue" transform="translate(170,46)"/>
+      <g id="jeepBody">
+        <path d="M72 72 L76 34 H140 L146 72" stroke="#2b2b2b" stroke-width="6" fill="none" stroke-linejoin="round"/>
+        <path d="M188 74 L196 28 L203 28 L195 74Z" fill="#e6f6ff" opacity=".75"/>
+        <path d="M192 74 L199 28" stroke="#2b2b2b" stroke-width="5" stroke-linecap="round"/>
+        <circle cx="10" cy="96" r="26" fill="#222"/><circle cx="10" cy="96" r="13" fill="#2f6fb0"/><circle cx="10" cy="96" r="5" fill="#2b2b2b"/>
+        <path d="M22 70 H186 L196 80 H262 Q272 80 272 90 V124 Q272 132 264 132 H22 Q14 132 14 124 V78 Q14 70 22 70Z" fill="#2f6fb0"/>
+        <path d="M14 98 H272" stroke="#1f4f86" stroke-width="2"/>
+        <path d="M120 74 V128" stroke="#1f4f86" stroke-width="2"/>
+        <rect x="104" y="86" width="12" height="4" rx="2" fill="#2f3820"/>
+        <circle cx="266" cy="92" r="6.5" fill="#fff6c8" stroke="#2f3820" stroke-width="2"/>
+        <rect x="258" y="118" width="22" height="10" rx="3" fill="#2b2b2b"/>
+        <rect x="4" y="118" width="20" height="10" rx="3" fill="#2b2b2b"/>
+        <path d="M26 132 L38 102 H100 L112 132Z" fill="#1d3f66"/>
+        <path d="M176 132 L188 102 H250 L262 132Z" fill="#1d3f66"/>
+      </g>
+      <g transform="translate(69,140)"><g class="wheel"><use href="#wheelDef"/></g></g>
+      <g transform="translate(219,140)"><g class="wheel"><use href="#wheelDef"/></g></g>
+    </g>
+    <!-- finale: jeep facing us, minions dancing on the roof -->
+    <g id="finale" opacity="0" style="transition:opacity 1s ease">
+      <g transform="translate(600,440) scale(.45) translate(-400,-400)">
+        <rect x="80" y="455" width="95" height="235" rx="14" fill="#2d2f36"/>
+        <rect x="625" y="455" width="95" height="235" rx="14" fill="#2d2f36"/>
+        <path d="M68 352 Q120 340 170 355 L185 455 H85 Q68 455 68 440Z" fill="#2a86e0"/>
+        <path d="M732 352 Q680 340 630 355 L615 455 H715 Q732 455 732 440Z" fill="#2a86e0"/>
+        <path d="M150 262 H650 L668 340 Q675 380 650 420 L610 460 H190 L150 420 Q125 380 132 340Z" fill="#1f7ad9"/>
+        <rect x="172" y="115" width="456" height="14" fill="#1f7ad9"/>
+        <path d="M150 262 L158 135 Q160 115 175 115 L186 115 L172 262Z" fill="#1f7ad9"/>
+        <path d="M650 262 L642 135 Q640 115 625 115 L614 115 L628 262Z" fill="#1f7ad9"/>
+        <g transform="translate(275,186) scale(1.5)"><g class="dance"><use href="#minion"/></g></g>
+        <g transform="translate(525,186) scale(1.5)"><g class="dance d2"><use href="#minionBlue"/></g></g>
+        <rect x="172" y="128" width="456" height="134" rx="8" fill="none" stroke="#5b8fc4" stroke-width="6"/>
+        <rect x="68" y="178" width="64" height="62" rx="8" fill="#1b2330"/>
+        <rect x="668" y="178" width="64" height="62" rx="8" fill="#1b2330"/>
+        <rect x="128" y="236" width="32" height="10" fill="#1b2330"/>
+        <rect x="640" y="236" width="32" height="10" fill="#1b2330"/>
+        <rect x="275" y="350" width="250" height="110" rx="18" fill="#1f7ad9"/>
+        <g fill="#0f2c4f"><rect x="282" y="362" width="12" height="86" rx="5"/><rect x="316" y="362" width="12" height="86" rx="5"/><rect x="350" y="362" width="12" height="86" rx="5"/><rect x="384" y="362" width="12" height="86" rx="5"/><rect x="418" y="362" width="12" height="86" rx="5"/><rect x="452" y="362" width="12" height="86" rx="5"/><rect x="486" y="362" width="12" height="86" rx="5"/></g>
+        <circle cx="228" cy="380" r="32" fill="#7a8797"/><circle cx="228" cy="380" r="24" fill="#e9eef5"/>
+        <circle cx="572" cy="380" r="32" fill="#7a8797"/><circle cx="572" cy="380" r="24" fill="#e9eef5"/>
+        <circle cx="224" cy="442" r="13" fill="#f0801e"/><circle cx="576" cy="442" r="13" fill="#f0801e"/>
+        <path d="M92 480 H708 L690 540 H110Z" fill="#1b2330"/>
+        <rect x="190" y="560" width="420" height="40" rx="6" fill="#1b2330"/>
+        <circle cx="200" cy="515" r="14" fill="#5b6675"/><circle cx="255" cy="515" r="9" fill="#5b6675"/>
+        <circle cx="545" cy="515" r="9" fill="#5b6675"/><circle cx="600" cy="515" r="14" fill="#5b6675"/>
+      </g>
+    </g>
+  </svg>
+
+  <div id="note">
+    <p id="para"></p>
+    <div class="nav"><button class="pill" id="nextBtn">next ›</button></div>
+  </div>
+</section>
+
+<div id="prank"></div>
+<canvas id="confetti"></canvas>
+<button id="musicBtn" title="music">♪</button>
+<div id="yt"><div id="ytPlayer"></div></div>
+
+<script>
+const SONG = 'VPRjCeoBqrI';   // A Sky Full of Stars (YouTube video id)
+const CANDLES = 5;            // number of candles (1-9)
+
+const $ = s => document.querySelector(s);
+const NS = 'http://www.w3.org/2000/svg';
+const el = (t, a = {}, p) => { const e = document.createElementNS(NS, t); for (const k in a) e.setAttribute(k, a[k]); if (p) p.appendChild(e); return e; };
+const rand = (a, b) => a + Math.random() * (b - a);
+
+function showScene(id) {
+  ['#start', '#wishScene', '#cakeScene', '#driveScene'].forEach(s => $(s).classList.toggle('hidden', s !== id));
+}
+
+/* cake decorations */
+function drips(g, cx, cy, rx, ry, x0, x1, step, lens) {
+  let i = 0;
+  for (let x = x0; x <= x1; x += step, i++) {
+    const edge = cy + ry * Math.sqrt(Math.max(0, 1 - ((x - cx) / rx) ** 2));
+    el('line', { x1: x, y1: edge - 6, x2: x, y2: edge + lens[i % lens.length] }, g);
+  }
+  el('path', { d: `M${cx - rx} ${cy} Q${cx - rx} ${cy + ry * 1.2} ${cx} ${cy + ry * 1.2} Q${cx + rx} ${cy + ry * 1.2} ${cx + rx} ${cy}` }, g);
+}
+drips($('#drips1'), 200, 222, 138, 22, 70, 330, 20, [8, 18, 11, 24, 9, 15]);
+drips($('#drips2'), 200, 150, 78, 14, 128, 272, 16, [7, 14, 9, 18, 6]);
+const sprinkleCols = ['#fff', '#7fb3d5', '#f2c14e', '#9cc5a1', '#ee5f90'];
+function sprinkles(g, x0, x1, y0, y1, n) {
+  for (let i = 0; i < n; i++) {
+    const x = rand(x0, x1), y = rand(y0, y1);
+    el('rect', { x, y, width: 7, height: 2.4, rx: 1.2, fill: sprinkleCols[i % 5], transform: `rotate(${rand(0, 180).toFixed(0)} ${x} ${y})` }, g);
+  }
+}
+sprinkles($('#sprinkles1'), 75, 325, 262, 305, 34);
+sprinkles($('#sprinkles2'), 132, 268, 178, 210, 16);
+
+/* candles */
+const candleCols = ['#7fb3d5', '#f2c14e', '#9cc5a1', '#ee5f90', '#b9a3e3'];
+/* prank: the first two taps make the candle dodge */
+let pranks = 0, prankTimer = null;
+function prankSay(text) {
+  const p = $('#prank');
+  p.textContent = text; p.classList.add('show');
+  clearTimeout(prankTimer);
+  prankTimer = setTimeout(() => p.classList.remove('show'), 3000);
+}
+function dodge(c) {
+  const bx = +c.dataset.x, by = +c.dataset.y;
+  // pick a free spot on the cake (never on top of another candle), away from where it was
+  const others = [...document.querySelectorAll('.candle')].filter(o => o !== c)
+    .map(o => ({ x: +o.dataset.x, y: +o.dataset.y }));
+  const cands = [];
+  for (let x = 96; x <= 304; x += 4) for (const dy of [-14, 0, 14]) {
+    const cx = x, cy = by + dy;
+    if (Math.abs(cx - bx) < 30) continue;
+    if (others.every(o => Math.hypot(o.x - cx, o.y - cy) >= 34)) cands.push([cx, cy]);
+  }
+  let tx, ty;
+  if (cands.length) [tx, ty] = cands[Math.floor(Math.random() * cands.length)];
+  else { tx = bx; ty = by - 46; }   // no room sideways: hop up instead so it still moves
+  const t0 = performance.now(), dur = 380;
+  (function f(t) {
+    const p = Math.min(1, (t - t0) / dur), e = 1 - Math.pow(1 - p, 3);
+    c.setAttribute('transform', `translate(${(bx + (tx - bx) * e).toFixed(1)},${(by + (ty - by) * e).toFixed(1)})`);
+    if (p < 1) requestAnimationFrame(f);
+  })(t0);
+  c.dataset.x = tx.toFixed(1); c.dataset.y = ty.toFixed(1);
+}
+function buildCandles() {
+  const g = $('#candles'); g.innerHTML = '';
+  const n = Math.max(1, Math.min(9, CANDLES)), spots = [];
+  for (let i = 0; i < n; i++) {
+    const a = Math.PI + (i + .5) / n * Math.PI;
+    spots.push({ x: n === 1 ? 200 : 200 + Math.cos(a) * 58, y: 150 + Math.sin(a) * 6 + (i % 2 ? 5 : 0) });
+  }
+  spots.sort((a, b) => a.y - b.y).forEach((p, i) => {
+    const c = el('g', { class: 'candle', transform: `translate(${p.x.toFixed(1)},${p.y.toFixed(1)})` }, g);
+    el('circle', { class: 'glow', cy: -58, r: 20, fill: 'url(#glowG)' }, c);
+    el('rect', { x: -5, y: -44, width: 10, height: 44, rx: 3, fill: candleCols[i % 5] }, c);
+    el('path', { d: 'M-5 -34 L5 -40 M-5 -22 L5 -28 M-5 -10 L5 -16', stroke: '#fff', 'stroke-width': 2, opacity: .7 }, c);
+    el('line', { x1: 0, y1: -44, x2: 0, y2: -50, stroke: '#3a2a22', 'stroke-width': 1.6 }, c);
+    el('path', { class: 'flame', d: 'M0 -48 C-7 -55 -6 -66 0 -77 C6 -66 7 -55 0 -48Z', fill: 'url(#flameG)' }, c);
+    c.dataset.x = p.x.toFixed(1); c.dataset.y = p.y.toFixed(1);
+    c.addEventListener('click', () => {
+      if (c.classList.contains('out')) return;
+      if (pranks < 2) { pranks++; dodge(c); prankSay(pranks === 1 ? ':D' : 'ok fine i\u2019ll stop'); return; }
+      blow(c);
+    });
+  });
+}
+const lit = () => [...document.querySelectorAll('.candle:not(.out)')];
+function blow(c) {
+  if (!c || c.classList.contains('out')) return;
+  c.classList.add('out');
+  for (let k = 0; k < 3; k++) {
+    const s = el('circle', { class: 'smoke', cx: rand(-3, 3), cy: -52, r: 4 }, c);
+    s.style.animationDelay = k * .18 + 's'; setTimeout(() => s.remove(), 2200);
+  }
+  if (!lit().length) allOut();
+}
+const blowRandom = () => { const l = lit(); if (l.length) blow(l[Math.floor(Math.random() * l.length)]); };
+
+/* mic */
+let mic = null;
+async function startMic() {
+  try {
+    mic = await navigator.mediaDevices.getUserMedia({ audio: { echoCancellation: false, noiseSuppression: false, autoGainControl: false } });
+    const ac = new (window.AudioContext || window.webkitAudioContext)(), an = ac.createAnalyser(); an.fftSize = 1024;
+    ac.createMediaStreamSource(mic).connect(an);
+    const buf = new Uint8Array(an.frequencyBinCount); let base = 0, frames = 0, hot = 0;
+    $('#hint').textContent = 'listening… make a wish and blow';
+    (function loop() {
+      if (!lit().length) return stopMic();
+      an.getByteFrequencyData(buf);
+      let s = 0; for (let i = 1; i < 40; i++) s += buf[i]; const lvl = s / 39;
+      if (frames < 30) { base = Math.max(base, lvl); frames++; }
+      else if (lvl > Math.max(base + 45, 120)) { if (++hot > 3) { blowRandom(); if (lvl > 185) blowRandom(); hot = 0; } }
+      else hot = Math.max(0, hot - 1);
+      requestAnimationFrame(loop);
+    })();
+  } catch (e) { $('#hint').textContent = 'tap the candles to blow them out'; }
+}
+function stopMic() { if (mic) mic.getTracks().forEach(t => t.stop()); mic = null; }
+
+function allOut() {
+  stopMic();
+  $('#hint').textContent = 'wish granted ✦';
+  confetti();
+  setTimeout(startDrive, 2600);
+}
+function lightUp() {
+  driveRun++; busy = false; pranks = 0;
+  showScene('#cakeScene');
+  buildCandles();
+  $('#hint').textContent = 'tap the candles to blow them out';
+}
+
+/* confetti */
+function confetti() {
+  const c = $('#confetti'), x = c.getContext('2d'), d = devicePixelRatio || 1;
+  c.width = innerWidth * d; c.height = innerHeight * d; x.setTransform(d, 0, 0, d, 0, 0);
+  const cols = ['#f4a7c3', '#f2c14e', '#7fb3d5', '#9cc5a1', '#ee5f90'];
+  const P = Array.from({ length: 170 }, () => ({ x: innerWidth / 2, y: innerHeight * .45, vx: rand(-9, 9), vy: rand(-15, -4), r: rand(4, 8), a: rand(0, 6), va: rand(-.2, .2), c: cols[Math.floor(rand(0, 5))] }));
+  const t0 = performance.now();
+  (function f(t) {
+    x.clearRect(0, 0, innerWidth, innerHeight);
+    P.forEach(p => { p.vy += .32; p.vx *= .99; p.x += p.vx; p.y += p.vy; p.a += p.va;
+      x.save(); x.translate(p.x, p.y); x.rotate(p.a); x.fillStyle = p.c; x.fillRect(-p.r / 2, -p.r / 4, p.r, p.r / 2); x.restore(); });
+    if (t - t0 < 4000) requestAnimationFrame(f); else x.clearRect(0, 0, innerWidth, innerHeight);
+  })(t0);
+}
+
+/* beach drive (after candles) */
+
+/* story: one paragraph per "next"; the jeep drives to a new spot each time */
+const STORY = ["Dear my lovely Bung!", "Happy 24th birthday!!! We’re officially the same age now! These past two years with you have been an absolute blast, and it honestly feels like our love just keeps on growing. I love you so so much, Jay, and I’m so proud of everything you’ve accomplished this year and the person you continue to become.", "You put so much heart and dedication into everything you do, and it shows in every part of your life. I love your passion for music, and your dedication to running (a 5k and then a half marathon wowsies!!) how much you care about your work (although sometimes I wish you’d take it a little easier so you don’t overwork yourself ). I love how you go after anything you set your mind to. I hope you know that you honestly inspire me every day Bung.", "I love how goofy we can be around each other, and I love your calmness and patience just as much. Thank you for always letting me be myself and for being your lovely, silly self with me too. I love our loveeeee, woopie!!!\nI cannot wait to travel more with you and make so many more memories together. From our big adventures to the little everyday moments, I’m just so happy I get to share them with you. Here’s to another year of you, and another year of us", "I love you so so much ♡\n\nYour Bing"];
+const STOPS = [150, 370, 590, 810, 1020];   // where the jeep parks for each paragraph
+const EXIT_X = 1350;                       // drives off screen after the last paragraph
+let driveRun = 0, jeepX = -420, wheelRot = 0, step = -1, busy = false;
+
+function drawJeep(x, ts, moving) {
+  const world = $('#world');
+  $('#jeep').setAttribute('transform', `translate(${x.toFixed(1)},470)`);
+  wheelRot += (x - jeepX) / 30 * 180 / Math.PI; jeepX = x;
+  world.querySelectorAll('.wheel').forEach(w => w.setAttribute('transform', `rotate(${wheelRot.toFixed(1)})`));
+  const bob = moving ? Math.sin(ts / 85) * 1.8 : Math.sin(ts / 160) * .5;
+  $('#jeepBody').setAttribute('transform', `translate(0,${bob.toFixed(2)})`);
+}
+function moveJeep(toX, done) {
+  const run = ++driveRun, from = jeepX, dist = toX - from, dur = Math.max(1500, Math.abs(dist) * 9);
+  busy = true; let t0 = null;
+  (function f(ts) {
+    if (run !== driveRun) return;
+    if (t0 === null) t0 = ts;
+    const p = Math.min(1, (ts - t0) / dur), e = p < .5 ? 2 * p * p : 1 - Math.pow(-2 * p + 2, 2) / 2;
+    drawJeep(from + dist * e, ts, p < 1);
+    if (p < 1) requestAnimationFrame(f);
+    else { busy = false; done && done(); }
+  })(performance.now());
+}
+function showStep(i) {
+  $('#para').textContent = STORY[i];
+  $('#nextBtn').textContent = i === STORY.length - 1 ? 'drive off ›' : 'next ›';
+  $('#nextBtn').style.display = '';
+  $('#note').classList.add('show');
+  busy = false;
+}
+/* dance-party beat (synthesized, no internet needed) */
+let beat = null;
+function startBeat() {
+  if (beat) return;
+  const ac = new (window.AudioContext || window.webkitAudioContext)();
+  const master = ac.createGain(); master.gain.value = .32; master.connect(ac.destination);
+  const eighth = 60 / 118 / 2;
+  const nb = ac.createBuffer(1, ac.sampleRate * .3, ac.sampleRate), nd = nb.getChannelData(0);
+  for (let i = 0; i < nd.length; i++) nd[i] = Math.random() * 2 - 1;
+  const bass = [131, 131, 196, 220, 174, 196, 131, 147], lead = [523, 659, 784, 659, 698, 784, 880, 784];
+  const kick = t => { const o = ac.createOscillator(), g = ac.createGain();
+    o.frequency.setValueAtTime(150, t); o.frequency.exponentialRampToValueAtTime(40, t + .15);
+    g.gain.setValueAtTime(.9, t); g.gain.exponentialRampToValueAtTime(.001, t + .25);
+    o.connect(g).connect(master); o.start(t); o.stop(t + .3); };
+  const hat = t => { const src = ac.createBufferSource(), f = ac.createBiquadFilter(), g = ac.createGain();
+    src.buffer = nb; f.type = 'highpass'; f.frequency.value = 7000;
+    g.gain.setValueAtTime(.25, t); g.gain.exponentialRampToValueAtTime(.001, t + .06);
+    src.connect(f).connect(g).connect(master); src.start(t); src.stop(t + .08); };
+  const tone = (t, hz, type, dur, vol) => { const o = ac.createOscillator(), g = ac.createGain();
+    o.type = type; o.frequency.value = hz;
+    g.gain.setValueAtTime(vol, t); g.gain.exponentialRampToValueAtTime(.001, t + dur);
+    o.connect(g).connect(master); o.start(t); o.stop(t + dur + .02); };
+  let nextT = ac.currentTime + .1, n = 0;
+  const timer = setInterval(() => {
+    while (nextT < ac.currentTime + .2) {
+      const step = n % 8, t = nextT;
+      if (n % 2 === 0) kick(t); else hat(t);
+      tone(t, lead[step], 'square', eighth * .9, .05);
+      if (step % 2 === 0) tone(t, bass[step], 'sawtooth', eighth * .9, .07);
+      nextT += eighth; n++;
+    }
+  }, 50);
+  beat = { ac, timer };
+}
+function stopBeat() { if (!beat) return; clearInterval(beat.timer); beat.ac.close(); beat = null; }
+function showFinale() {
+  Music.pause(); startBeat();
+  $('#jeep').style.display = 'none';
+  $('#finale').style.opacity = '1';
+  $('#nextBtn').style.display = 'none';
+  $('#note').classList.remove('show');
+}
+function startDrive() {
+  driveRun++; step = -1; stopBeat();
+  $('#jeep').style.display = ''; $('#finale').style.opacity = '0';
+  jeepX = -420; wheelRot = 0; drawJeep(jeepX, 0, false);
+  $('#note').classList.remove('show');
+  showScene('#driveScene');
+  setTimeout(() => moveJeep(STOPS[0], () => { step = 0; showStep(0); }), 1200);
+}
+$('#nextBtn').onclick = () => {
+  if (busy) return;
+  $('#note').classList.remove('show');
+  step++;
+  if (step < STORY.length) moveJeep(STOPS[step], () => showStep(step));
+  else moveJeep(EXIT_X, showFinale);
+};
+
+/* music (YouTube) */
+const Music = { yt: null, ready: false, on: false, failed: false,
+  play() { this.on = true; if (this.ready) { this.yt.unMute(); this.yt.setVolume(75); this.yt.playVideo(); } ui(); },
+  pause() { this.on = false; if (this.ready) this.yt.pauseVideo(); ui(); } };
+window.onYouTubeIframeAPIReady = () => {
+  Music.yt = new YT.Player('ytPlayer', { width: 200, height: 200, videoId: SONG,
+    playerVars: { playsinline: 1, controls: 0, loop: 1, playlist: SONG },
+    events: { onReady: () => { Music.ready = true; if (Music.on) Music.play(); }, onError: () => { Music.failed = true; } } });
+};
+(() => { const s = document.createElement('script'); s.src = 'https://www.youtube.com/iframe_api'; s.onerror = () => Music.failed = true; document.head.appendChild(s); })();
+function ui() { $('#musicBtn').classList.toggle('on', Music.on); $('#musicBtn').textContent = Music.on ? '♪' : '♩'; }
+$('#musicBtn').onclick = () => {
+  if (beat) return stopBeat();
+  if (Music.failed) return window.open('https://www.youtube.com/watch?v=' + SONG, '_blank');
+  Music.on ? Music.pause() : Music.play();
+};
+
+$('#openBtn').onclick = () => { Music.play(); showScene('#wishScene'); };
+$('#wishBtn').onclick = lightUp;
+ui();
+</script>
+</body>
+</html>
